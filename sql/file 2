@@ -1,0 +1,34 @@
+-- =====================================================
+-- Employee Salary Analytics - SQL Functions
+-- Author: Harendra Pratap
+-- Database: PostgreSQL
+-- =====================================================
+
+-- 1. Employee ki tenure (years mein)
+CREATE OR REPLACE FUNCTION get_tenure_years(p_hire_date DATE)
+RETURNS NUMERIC AS $$
+BEGIN
+    RETURN ROUND((CURRENT_DATE - p_hire_date) / 365.25, 2);
+END;
+$$ LANGUAGE plpgsql;
+
+-- 2. Salary band nikalne ke liye
+CREATE OR REPLACE FUNCTION get_salary_band(p_salary NUMERIC)
+RETURNS TEXT AS $$
+BEGIN
+    RETURN CASE
+        WHEN p_salary < 60000  THEN 'Entry'
+        WHEN p_salary < 120000 THEN 'Mid'
+        WHEN p_salary < 200000 THEN 'Senior'
+        ELSE 'Executive'
+    END;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 3. Kisi department ka total payroll
+CREATE OR REPLACE FUNCTION get_dept_payroll(p_dept_id INT)
+RETURNS NUMERIC AS $$
+    SELECT COALESCE(SUM(annual_salary_usd), 0)
+    FROM employees
+    WHERE dept_id = p_dept_id;
+$$ LANGUAGE sql;
